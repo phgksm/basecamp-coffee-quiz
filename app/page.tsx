@@ -67,31 +67,39 @@ const questions: Question[] = [
 
 const personalities: Record<
   Personality,
-  { name: string; drink: string; tagline: string; emoji: string }
+  { name: string; drink: string; tagline: string; emoji: string; description: string }
 > = {
   bold: {
     name: "Bold Adventurer",
     drink: "Double Espresso",
     tagline: "You live for intensity",
     emoji: "🏔️",
+    description:
+      "You're the first one up and the last one to call it a night. You crave new experiences, big flavors, and the kind of coffee that hits like a wake-up call. No cream, no sugar — just pure, unfiltered energy.",
   },
   cozy: {
     name: "Cozy Classic",
     drink: "Medium Roast Drip",
     tagline: "Comfort in every cup",
     emoji: "📖",
+    description:
+      "You know that the best things in life are simple and savored slowly. A familiar mug, a quiet morning, and a perfectly brewed cup — that's your kind of magic. You don't follow trends, you set the vibe.",
   },
   sweet: {
     name: "Sweet Enthusiast",
     drink: "Caramel Latte",
     tagline: "Life's too short for bitter",
     emoji: "🧁",
+    description:
+      "You bring warmth to every room and sweetness to every conversation. Your coffee order is an extension of your personality — bright, joyful, and unapologetically delicious. Extra caramel? Always.",
   },
   indulgent: {
     name: "Indulgent Treat",
     drink: "Mocha with Whip",
     tagline: "Coffee is dessert",
     emoji: "🍫",
+    description:
+      "Why choose between coffee and dessert when you can have both? You believe every day deserves a little luxury, and your coffee order proves it. Life is rich — your drink should be too.",
   },
 };
 
@@ -121,10 +129,28 @@ export default function Home() {
     }
   }
 
+  function goBack() {
+    if (currentQ > 0) {
+      setAnswers(answers.slice(0, -1));
+      setCurrentQ(currentQ - 1);
+    }
+  }
+
   function restart() {
     setScreen("welcome");
     setCurrentQ(0);
     setAnswers([]);
+  }
+
+  function share(result: { name: string; drink: string }) {
+    const text = `I'm a ${result.name}! My perfect brew is ${result.drink}. What's your coffee personality?`;
+    const url = window.location.href;
+    if (navigator.share) {
+      navigator.share({ title: "My Coffee Personality", text, url });
+    } else {
+      navigator.clipboard.writeText(`${text}\n${url}`);
+      alert("Copied to clipboard!");
+    }
   }
 
   /* ── Welcome ── */
@@ -187,9 +213,17 @@ export default function Home() {
             </div>
           </div>
 
-          <p className="text-center text-sm text-dark-brown/50">
-            Question {currentQ + 1} of {questions.length}
-          </p>
+          <div className="flex items-center justify-center gap-4 text-sm text-dark-brown/50">
+            {currentQ > 0 && (
+              <button
+                onClick={goBack}
+                className="underline underline-offset-2 hover:text-dark-brown/70 transition cursor-pointer"
+              >
+                Back
+              </button>
+            )}
+            <span>Question {currentQ + 1} of {questions.length}</span>
+          </div>
         </div>
       </div>
     );
@@ -198,25 +232,44 @@ export default function Home() {
   /* ── Result ── */
   const result = personalities[tallyResults(answers)];
   return (
-    <div className="flex min-h-screen items-center justify-center px-4">
+    <div className="flex min-h-screen items-center justify-center px-4 py-12">
       <div className="max-w-md w-full text-center space-y-6">
-        <div className="rounded-2xl bg-cream p-10 shadow-md space-y-4">
-          <span className="text-5xl">{result.emoji}</span>
+        <div className="rounded-2xl bg-cream p-10 shadow-md space-y-5">
+          <span className="text-6xl block">{result.emoji}</span>
           <h2 className="font-serif text-3xl font-bold text-dark-brown">
             You&rsquo;re a {result.name}!
           </h2>
           <p className="text-lg text-dark-brown/70 italic">&ldquo;{result.tagline}&rdquo;</p>
+          <p className="text-dark-brown/80 leading-relaxed">{result.description}</p>
           <div className="rounded-xl bg-warm-bg px-6 py-4">
             <p className="text-sm text-dark-brown/60 uppercase tracking-wide">Your coffee</p>
             <p className="text-xl font-semibold text-dark-brown mt-1">{result.drink}</p>
           </div>
         </div>
-        <button
-          onClick={restart}
-          className="inline-block rounded-full bg-warm-brown px-8 py-3 text-lg font-semibold text-cream shadow-md transition hover:-translate-y-0.5 hover:shadow-lg cursor-pointer"
-        >
-          Retake Quiz
-        </button>
+
+        <div className="rounded-2xl bg-cream/60 border-2 border-dashed border-warm-brown/20 px-6 py-5">
+          <p className="font-serif text-lg font-semibold text-dark-brown">
+            Show this to your barista
+          </p>
+          <p className="text-dark-brown/60 text-sm mt-1">
+            Ask for your {result.drink} at any Basecamp Coffee location
+          </p>
+        </div>
+
+        <div className="flex flex-col sm:flex-row gap-3 justify-center">
+          <button
+            onClick={() => share(result)}
+            className="rounded-full bg-warm-brown px-8 py-3 text-lg font-semibold text-cream shadow-md transition hover:-translate-y-0.5 hover:shadow-lg cursor-pointer"
+          >
+            Share My Result
+          </button>
+          <button
+            onClick={restart}
+            className="rounded-full border-2 border-warm-brown/30 px-8 py-3 text-lg font-semibold text-dark-brown transition hover:-translate-y-0.5 hover:shadow-md hover:border-warm-brown/50 cursor-pointer"
+          >
+            Retake Quiz
+          </button>
+        </div>
       </div>
     </div>
   );
