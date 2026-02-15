@@ -138,10 +138,12 @@ export default function Home() {
       return () => clearTimeout(timer);
     }
     if (screen === "result") {
+      const resultType = tallyResults(answers);
+      trackEvent("quiz_result", { personality: personalities[resultType].name });
       const timer = setTimeout(() => setResultReady(true), 50);
       return () => clearTimeout(timer);
     }
-  }, [screen]);
+  }, [screen]); // eslint-disable-line react-hooks/exhaustive-deps
 
   function handleStart() {
     trackEvent("quiz_start");
@@ -278,12 +280,7 @@ export default function Home() {
   }
 
   /* ── Result ── */
-  const resultType = tallyResults(answers);
-  const result = personalities[resultType];
-
-  if (screen === "result" && !resultReady) {
-    trackEvent("quiz_result", { personality: result.name });
-  }
+  const result = personalities[tallyResults(answers)];
 
   return (
     <div className="flex min-h-screen items-center justify-center px-4 py-12">
