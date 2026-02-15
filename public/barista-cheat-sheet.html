@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Barista Cheat Sheet — Coffee Personality Quiz</title>
+  <link href="https://fonts.googleapis.com/css2?family=Lora:wght@700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    @media print {
+      body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      .no-print { display: none; }
+    }
+
+    body {
+      font-family: 'Nunito', sans-serif;
+      background: #F5EDE3;
+      color: #4A3728;
+      padding: 40px;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      font-family: 'Lora', serif;
+      font-size: 28px;
+      text-align: center;
+      margin-bottom: 4px;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: #4A3728aa;
+      font-size: 14px;
+      margin-bottom: 32px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    .card {
+      background: #FFFBF7;
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 2px 8px rgba(74, 55, 40, 0.08);
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .card-emoji {
+      font-size: 32px;
+      line-height: 1;
+    }
+
+    .card-title {
+      font-family: 'Lora', serif;
+      font-size: 20px;
+      font-weight: 700;
+    }
+
+    .drink-badge {
+      display: inline-block;
+      background: #F5EDE3;
+      border-radius: 8px;
+      padding: 6px 12px;
+      font-weight: 700;
+      font-size: 14px;
+      margin-bottom: 12px;
+    }
+
+    .section-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #4A3728aa;
+      margin-bottom: 4px;
+      font-weight: 700;
+    }
+
+    .say-this {
+      font-size: 15px;
+      line-height: 1.5;
+      margin-bottom: 12px;
+      font-style: italic;
+      color: #4A3728cc;
+    }
+
+    .upsell {
+      font-size: 14px;
+      line-height: 1.5;
+      color: #4A3728bb;
+    }
+
+    .footer {
+      margin-top: 32px;
+      text-align: center;
+      font-size: 13px;
+      color: #4A3728aa;
+    }
+
+    .footer strong {
+      color: #4A3728;
+    }
+
+    .print-btn {
+      display: block;
+      margin: 0 auto 32px;
+      background: #B08968;
+      color: #FFFBF7;
+      border: none;
+      border-radius: 999px;
+      padding: 12px 32px;
+      font-family: 'Nunito', sans-serif;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.15s, box-shadow 0.15s;
+      box-shadow: 0 2px 8px rgba(74, 55, 40, 0.15);
+    }
+    .print-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(74, 55, 40, 0.2);
+    }
+  </style>
+</head>
+<body>
+
+<button class="print-btn no-print" onclick="window.print()">Print Cheat Sheet</button>
+
+<h1>Coffee Personality Quiz — Barista Cheat Sheet</h1>
+<p class="subtitle">When a customer shows you their quiz result, here's what to say.</p>
+
+<div class="grid">
+
+  <div class="card">
+    <div class="card-header">
+      <span class="card-emoji">🏔️</span>
+      <span class="card-title">Bold Adventurer</span>
+    </div>
+    <div class="drink-badge">Double Espresso</div>
+    <p class="section-label">Say this</p>
+    <p class="say-this">"Bold Adventurer — nice! You clearly don't mess around. Your Double Espresso is coming right up."</p>
+    <p class="section-label">Also try</p>
+    <p class="upsell"><b>Single-origin pour over</b>, <b>cold brew</b> (no ice, no water), or a <b>red-eye</b> if they want the extra kick.</p>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <span class="card-emoji">📖</span>
+      <span class="card-title">Cozy Classic</span>
+    </div>
+    <div class="drink-badge">Medium Roast Drip</div>
+    <p class="section-label">Say this</p>
+    <p class="say-this">"A Cozy Classic! You know what you like and we respect that. Let me get your Medium Roast started."</p>
+    <p class="section-label">Also try</p>
+    <p class="upsell"><b>Honey latte</b>, <b>chai tea latte</b>, or our <b>house blend</b> with a splash of oat milk.</p>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <span class="card-emoji">🧁</span>
+      <span class="card-title">Sweet Enthusiast</span>
+    </div>
+    <div class="drink-badge">Caramel Latte</div>
+    <p class="section-label">Say this</p>
+    <p class="say-this">"Sweet Enthusiast — great pick! Want extra caramel on that? I already know the answer."</p>
+    <p class="section-label">Also try</p>
+    <p class="upsell"><b>Vanilla oat latte</b>, <b>brown sugar shaken espresso</b>, or whatever our <b>seasonal sweet special</b> is right now.</p>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <span class="card-emoji">🍫</span>
+      <span class="card-title">Indulgent Treat</span>
+    </div>
+    <div class="drink-badge">Mocha with Whip</div>
+    <p class="section-label">Say this</p>
+    <p class="say-this">"Indulgent Treat — my kind of person! One Mocha with Whip, because you deserve it."</p>
+    <p class="section-label">Also try</p>
+    <p class="upsell"><b>White chocolate mocha</b>, <b>s'mores latte</b>, or a <b>hot chocolate</b> with an espresso shot added.</p>
+  </div>
+
+</div>
+
+<div class="footer">
+  <p><strong>Tip:</strong> Ask every customer — "Have you taken our Coffee Personality Quiz?" It's a great conversation starter.</p>
+  <p style="margin-top: 4px;">Quiz link: basecamp-coffee-quiz-orpin.vercel.app</p>
+</div>
+
+</body>
+</html>
