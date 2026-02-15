@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 /* ─── Data ─────────────────────────────────────────────── */
 
@@ -112,18 +112,49 @@ function tallyResults(answers: Personality[]): Personality {
   return order.reduce((best, cur) => (counts[cur] > counts[best] ? cur : best), order[0]);
 }
 
+function trackEvent(event: string, data?: Record<string, string | number>) {
+  if (typeof window !== "undefined" && "gtag" in window) {
+    (window as unknown as { gtag: (...args: unknown[]) => void }).gtag(
+      "event",
+      event,
+      data,
+    );
+  }
+  console.log("[analytics]", event, data ?? "");
+}
+
 /* ─── Component ────────────────────────────────────────── */
 
 export default function Home() {
-  const [screen, setScreen] = useState<"welcome" | "quiz" | "result">("welcome");
+  const [screen, setScreen] = useState<"welcome" | "quiz" | "brewing" | "result">("welcome");
   const [currentQ, setCurrentQ] = useState(0);
   const [answers, setAnswers] = useState<Personality[]>([]);
+  const [toast, setToast] = useState(false);
+  const [resultReady, setResultReady] = useState(false);
+
+  useEffect(() => {
+    if (screen === "brewing") {
+      const timer = setTimeout(() => setScreen("result"), 2000);
+      return () => clearTimeout(timer);
+    }
+    if (screen === "result") {
+      const timer = setTimeout(() => setResultReady(true), 50);
+      return () => clearTimeout(timer);
+    }
+  }, [screen]);
+
+  function handleStart() {
+    trackEvent("quiz_start");
+    setScreen("quiz");
+  }
 
   function handleAnswer(type: Personality) {
     const next = [...answers, type];
+    trackEvent("quiz_answer", { question: currentQ + 1, answer: type });
     setAnswers(next);
     if (next.length === questions.length) {
-      setScreen("result");
+      setResultReady(false);
+      setScreen("brewing");
     } else {
       setCurrentQ(currentQ + 1);
     }
@@ -140,16 +171,19 @@ export default function Home() {
     setScreen("welcome");
     setCurrentQ(0);
     setAnswers([]);
+    setResultReady(false);
   }
 
   function share(result: { name: string; drink: string }) {
+    trackEvent("quiz_share", { personality: result.name });
     const text = `I'm a ${result.name}! My perfect brew is ${result.drink}. What's your coffee personality?`;
     const url = window.location.href;
     if (navigator.share) {
       navigator.share({ title: "My Coffee Personality", text, url });
     } else {
       navigator.clipboard.writeText(`${text}\n${url}`);
-      alert("Copied to clipboard!");
+      setToast(true);
+      setTimeout(() => setToast(false), 2500);
     }
   }
 
@@ -165,7 +199,7 @@ export default function Home() {
             Answer 5 fun questions and discover your perfect brew.
           </p>
           <button
-            onClick={() => setScreen("quiz")}
+            onClick={handleStart}
             className="inline-block rounded-full bg-warm-brown px-8 py-3 text-lg font-semibold text-cream shadow-md transition hover:-translate-y-0.5 hover:shadow-lg cursor-pointer"
           >
             Start Quiz
@@ -229,11 +263,35 @@ export default function Home() {
     );
   }
 
+  /* ── Brewing (loading) ── */
+  if (screen === "brewing") {
+    return (
+      <div className="flex min-h-screen items-center justify-center px-4">
+        <div className="text-center space-y-4">
+          <span className="text-5xl block animate-bounce">☕</span>
+          <p className="font-serif text-2xl font-bold text-dark-brown">
+            Brewing your results&hellip;
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   /* ── Result ── */
-  const result = personalities[tallyResults(answers)];
+  const resultType = tallyResults(answers);
+  const result = personalities[resultType];
+
+  if (screen === "result" && !resultReady) {
+    trackEvent("quiz_result", { personality: result.name });
+  }
+
   return (
     <div className="flex min-h-screen items-center justify-center px-4 py-12">
-      <div className="max-w-md w-full text-center space-y-6">
+      <div
+        className={`max-w-md w-full text-center space-y-6 transition-all duration-700 ${
+          resultReady ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+        }`}
+      >
         <div className="rounded-2xl bg-cream p-10 shadow-md space-y-5">
           <span className="text-6xl block">{result.emoji}</span>
           <h2 className="font-serif text-3xl font-bold text-dark-brown">
@@ -256,7 +314,7 @@ export default function Home() {
           </p>
         </div>
 
-        <div className="flex flex-col sm:flex-row gap-3 justify-center">
+        <div className="flex flex-col sm:flex-row gap-3 justify-center relative">
           <button
             onClick={() => share(result)}
             className="rounded-full bg-warm-brown px-8 py-3 text-lg font-semibold text-cream shadow-md transition hover:-translate-y-0.5 hover:shadow-lg cursor-pointer"
@@ -269,6 +327,15 @@ export default function Home() {
           >
             Retake Quiz
           </button>
+        </div>
+
+        {/* Toast */}
+        <div
+          className={`fixed bottom-6 left-1/2 -translate-x-1/2 rounded-full bg-dark-brown px-6 py-3 text-cream text-sm shadow-lg transition-all duration-300 ${
+            toast ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4 pointer-events-none"
+          }`}
+        >
+          Copied to clipboard!
         </div>
       </div>
     </div>
